@@ -37,22 +37,21 @@ pip install -r requirements.txt
 Para usar o script, execute seguido dos parâmetros necessários:
 
 ```
-python cli_separar_pdf.py <pdf_entrada> <pagina_inicial> <pagina_final> <pdf_saida>
+python cli_separar_pdf.py <pdf_entrada> <intervalos_paginas> <pdf_saida>
 ```
 
 ### Parâmetros
 
 - `<pdf_entrada>`: Caminho para o arquivo PDF de entrada.
-- `<pagina_inicial>`: Número da página inicial.
-- `<pagina_final>`: Número da página final.
+- `<intervalos_paginas>`: Intervalos de páginas para extrair (ex: '1,3-5,7').
 - `<pdf_saida>`: Caminho para o arquivo PDF de saída.
 
 ### Exemplo
 
-Para extrair as páginas 2 a 4 de **documento.pdf** e salvar em **saida.pdf**:
+Para extrair as páginas 2, 4 a 6, e 8 de **documento.pdf** e salvar em **saida.pdf**:
 
 ```
-python cli_separar_pdf.py documento.pdf 2 4 saida.pdf
+python cli_separar_pdf.py documento.pdf "2,4-6,8" saida.pdf
 ```
 
 ### Verificações

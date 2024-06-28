@@ -3,26 +3,54 @@ from PyPDF2 import PdfReader, PdfWriter
 import os
 import sys
 
-__version__ = '1.0.1'
+__version__ = '2.0.0'
 
-def extrair_paginas(pdf_entrada, pagina_inicial, pagina_final, pdf_saida):
+def parsear_intervalos_paginas(intervalo_paginas):
+    """
+    Converte uma string de intervalos de páginas em uma lista de números de páginas.
+    Exemplo: '1,3-5,7' -> [1, 3, 4, 5, 7]
+    """
+    paginas = set()
+    intervalos = intervalo_paginas.split(',')
+
+    for intervalo in intervalos:
+        if '-' in intervalo:
+            inicio, fim = map(int, intervalo.split('-'))
+            if inicio > 0 and fim > 0 and fim >= inicio:
+                paginas.update(range(inicio, fim + 1))
+            else:
+                print(f'Erro: Intervalo de páginas inválido: {intervalo}')
+                sys.exit(1)
+        else:
+            pagina = int(intervalo)
+            if pagina > 0:
+                paginas.add(pagina)
+            else:
+                print(f'Erro: Número de página inválido: {pagina}')
+                sys.exit(1)
+
+    return sorted(paginas)
+
+def extrair_paginas(pdf_entrada, intervalos_paginas, pdf_saida):
     """
     Extrai as páginas de pagina_inicial até pagina_final (inclusive) do pdf_entrada e salva em pdf_saida.
     """
     leitor = PdfReader(pdf_entrada)
     escritor = PdfWriter()
 
-    # Ajustar índices de página (PyPDF2 começa do 0)
-    pagina_inicial -= 1
-    pagina_final -= 1
+    paginas = parsear_intervalos_paginas(intervalos_paginas)
 
-    for i in range(pagina_inicial, pagina_final + 1):
-        escritor.add_page(leitor.pages[i])
+    for pagina in paginas:
+        if pagina <= len(leitor.pages):
+            escritor.add_page(leitor.pages[pagina - 1]) # Ajustar para índice zero
+        else:
+            print(f'Erro: Página {pagina} não existe no documento.')
+            sys.exit(1)
 
     with open(pdf_saida, 'wb') as arquivo_saida:
         escritor.write(arquivo_saida)
 
-    print(f'Páginas {pagina_inicial + 1} a {pagina_final + 1} extraídas para {pdf_saida}')
+    print(f'Páginas {intervalos_paginas} extraídas para {pdf_saida}')
 
 def main():
     parser = argparse.ArgumentParser(
@@ -30,8 +58,7 @@ def main():
         description='Separar páginas de um PDF'
     )
     parser.add_argument('pdf_entrada', type=str, help='Caminho para o arquivo PDF de entrada')
-    parser.add_argument('pagina_inicial', type=int, help='Número da página inicial (começa em 1)')
-    parser.add_argument('pagina_final', type=int, help='Número da página final (incluindo esta)')
+    parser.add_argument('intervalos_paginas', type=str, help='Intervalos de páginas para extrair (ex: 1,3-5,7)')
     parser.add_argument('pdf_saida', type=str, help='Caminho para o arquivo PDF de saída')
     parser.add_argument('-v', '--version', action='version', version=f'%(prog)s {__version__}')
 
@@ -42,20 +69,7 @@ def main():
         print(f'Erro: O arquivo "{args.pdf_entrada}" não existe.')
         sys.exit(1)
 
-    # Verificar se as páginas são válidas
-    if args.pagina_inicial <= 0:
-        print(f'Erro: A página inicial deve ser maior que 0. Você forneceu {args.pagina_inicial}.')
-        sys.exit(1)
-
-    if args.pagina_final <= 0:
-        print(f'Erro: A página final deve ser maior que 0. Você forneceu {args.pagina_final}.')
-        sys.exit(1)
-
-    if args.pagina_final < args.pagina_inicial:
-        print(f'Erro: A página final ({args.pagina_final}) não pode ser menor que a página inicial ({args.pagina_inicial}).')
-        sys.exit(1)
-
-    extrair_paginas(args.pdf_entrada, args.pagina_inicial, args.pagina_final, args.pdf_saida)
+    extrair_paginas(args.pdf_entrada, args.intervalos_paginas, args.pdf_saida)
 
 if __name__ == '__main__':
     main()
