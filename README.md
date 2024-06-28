@@ -11,6 +11,7 @@ Script de linha de comando (CLI) que permite extrair um intervalo de páginas de
 - Extrai páginas específicas de um PDF.
 - Gera um novo arquivo PDF com as páginas extraídas.
 - Suporta a especificação das páginas.
+- Realiza verificações para garantir que o arquivo de entrada existe e que as páginas especificadas são válidas.
 
 ## Requisitos
 
@@ -53,6 +54,16 @@ Para extrair as páginas 2 a 4 de **documento.pdf** e salvar em **saida.pdf**:
 ```
 python cli_separar_pdf.py documento.pdf 2 4 saida.pdf
 ```
+
+### Verificações
+
+O script inclui verificações para garantir a validade e a segurança:
+
+- **Existência do arquivo de entrada**: Verifica se o arquivo PDF de entrada especificado existe. Se o arquivo não for encontrado, o script imprime uma mensagem de erro e encerra a execução.
+
+- **Validação de páginas**:
+  - Verifica se o número da página inicial e da página final são maiores que zero.
+  - Garante que a página final não seja menor que a página inicial.
 
 ## Argumentos Opcionais
 - `-v`, `--version`: Exibe a versão do script.

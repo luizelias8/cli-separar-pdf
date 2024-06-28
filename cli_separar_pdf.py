@@ -1,7 +1,9 @@
 import argparse
 from PyPDF2 import PdfReader, PdfWriter
+import os
+import sys
 
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 
 def extrair_paginas(pdf_entrada, pagina_inicial, pagina_final, pdf_saida):
     """
@@ -34,6 +36,24 @@ def main():
     parser.add_argument('-v', '--version', action='version', version=f'%(prog)s {__version__}')
 
     args = parser.parse_args()
+
+    # Verificar se o arquivo PDF de entrada existe
+    if not os.path.exists(args.pdf_entrada):
+        print(f'Erro: O arquivo "{args.pdf_entrada}" não existe.')
+        sys.exit(1)
+
+    # Verificar se as páginas são válidas
+    if args.pagina_inicial <= 0:
+        print(f'Erro: A página inicial deve ser maior que 0. Você forneceu {args.pagina_inicial}.')
+        sys.exit(1)
+
+    if args.pagina_final <= 0:
+        print(f'Erro: A página final deve ser maior que 0. Você forneceu {args.pagina_final}.')
+        sys.exit(1)
+
+    if args.pagina_final < args.pagina_inicial:
+        print(f'Erro: A página final ({args.pagina_final}) não pode ser menor que a página inicial ({args.pagina_inicial}).')
+        sys.exit(1)
 
     extrair_paginas(args.pdf_entrada, args.pagina_inicial, args.pagina_final, args.pdf_saida)
 
