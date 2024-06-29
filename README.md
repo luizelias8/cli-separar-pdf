@@ -9,9 +9,8 @@ Script de linha de comando (CLI) que permite extrair um intervalo de páginas de
 ## Funcionalidades
 
 - Extrai páginas específicas de um PDF.
-- Gera um novo arquivo PDF com as páginas extraídas.
+- Salva o PDF separado no diretório especificado ou no diretório atual com nome modificado.
 - Suporta a especificação das páginas.
-- Realiza verificações para garantir que o arquivo de entrada existe e que as páginas especificadas são válidas.
 
 ## Requisitos
 
@@ -37,21 +36,27 @@ pip install -r requirements.txt
 Para usar o script, execute seguido dos parâmetros necessários:
 
 ```
-python cli_separar_pdf.py <pdf_entrada> <intervalos_paginas> <pdf_saida>
+python cli_separar_pdf.py <pdf_entrada> <intervalos_paginas> [-d <dir_saida>]
 ```
 
 ### Parâmetros
 
 - `<pdf_entrada>`: Caminho para o arquivo PDF de entrada.
 - `<intervalos_paginas>`: Intervalos de páginas para extrair (ex: '1,3-5,7').
-- `<pdf_saida>`: Caminho para o arquivo PDF de saída.
+- `-d <dir_saida>`: (Opcional) Diretório para salvar o PDF de saída. Se não for especificado, o script salvará no diretório atual.
 
 ### Exemplo
 
-Para extrair as páginas 2, 4 a 6, e 8 de **documento.pdf** e salvar em **saida.pdf**:
+Para extrair as páginas 2, 4 a 6, e 8 do arquivo **documento.pdf** e salvar como **documento_1.pdf** no diretório especificado:
 
 ```
-python cli_separar_pdf.py documento.pdf "2,4-6,8" saida.pdf
+python cli_separar_pdf.py documento.pdf "2,4-6,8" -d /caminho/para/diretorio
+```
+
+Ou, para salvar no diretório atual:
+
+```
+python cli_separar_pdf.py documento.pdf "2,4-6,8"
 ```
 
 ### Verificações

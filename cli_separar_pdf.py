@@ -3,7 +3,7 @@ from PyPDF2 import PdfReader, PdfWriter
 import os
 import sys
 
-__version__ = '2.0.0'
+__version__ = '3.0.0'
 
 def parsear_intervalos_paginas(intervalo_paginas):
     """
@@ -31,12 +31,16 @@ def parsear_intervalos_paginas(intervalo_paginas):
 
     return sorted(paginas)
 
-def extrair_paginas(pdf_entrada, intervalos_paginas, pdf_saida):
+def extrair_paginas(pdf_entrada, intervalos_paginas, dir_saida):
     """
     Extrai as páginas de pagina_inicial até pagina_final (inclusive) do pdf_entrada e salva em pdf_saida.
     """
     leitor = PdfReader(pdf_entrada)
     escritor = PdfWriter()
+
+    nome_arquivo, _ = os.path.splitext(os.path.basename(pdf_entrada))
+    novo_nome = f'{nome_arquivo}_1.pdf'
+    caminho_saida = os.path.join(dir_saida, novo_nome)
 
     paginas = parsear_intervalos_paginas(intervalos_paginas)
 
@@ -47,10 +51,10 @@ def extrair_paginas(pdf_entrada, intervalos_paginas, pdf_saida):
             print(f'Erro: Página {pagina} não existe no documento.')
             sys.exit(1)
 
-    with open(pdf_saida, 'wb') as arquivo_saida:
+    with open(caminho_saida, 'wb') as arquivo_saida:
         escritor.write(arquivo_saida)
 
-    print(f'Páginas {intervalos_paginas} extraídas para {pdf_saida}')
+    print(f'Páginas {intervalos_paginas} extraídas para {caminho_saida}')
 
 def main():
     parser = argparse.ArgumentParser(
@@ -59,7 +63,7 @@ def main():
     )
     parser.add_argument('pdf_entrada', type=str, help='Caminho para o arquivo PDF de entrada')
     parser.add_argument('intervalos_paginas', type=str, help='Intervalos de páginas para extrair (ex: 1,3-5,7)')
-    parser.add_argument('pdf_saida', type=str, help='Caminho para o arquivo PDF de saída')
+    parser.add_argument('-d', '--dir_saida', type=str, default=None, help='Diretório para salvar o PDF de saída (opcional)')
     parser.add_argument('-v', '--version', action='version', version=f'%(prog)s {__version__}')
 
     args = parser.parse_args()
@@ -69,7 +73,16 @@ def main():
         print(f'Erro: O arquivo "{args.pdf_entrada}" não existe.')
         sys.exit(1)
 
-    extrair_paginas(args.pdf_entrada, args.intervalos_paginas, args.pdf_saida)
+    # Determinar o diretório de saída
+    if args.dir_saida:
+        if not os.path.exists(args.dir_saida):
+            print(f'Erro: O diretório "{args.dir_saida}" não existe.')
+            sys.exit(1)
+        dir_saida = args.dir_saida
+    else:
+        dir_saida = os.getcwd()
+
+    extrair_paginas(args.pdf_entrada, args.intervalos_paginas, dir_saida)
 
 if __name__ == '__main__':
     main()
