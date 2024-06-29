@@ -3,7 +3,7 @@ from PyPDF2 import PdfReader, PdfWriter
 import os
 import sys
 
-__version__ = '3.2.0'
+__version__ = '3.2.1'
 
 def parsear_intervalos_paginas(intervalo_paginas):
     """
@@ -56,7 +56,7 @@ def extrair_paginas(pdf_entrada, intervalos_paginas, dir_saida, nome_arquivo_bas
         with open(caminho_saida, 'wb') as arquivo_saida:
             escritor.write(arquivo_saida)
 
-        print(f'Páginas {intervalos_paginas} extraídas para {caminho_saida}')
+        print(f'Páginas {intervalos} extraídas para {caminho_saida}')
 
 def main():
     parser = argparse.ArgumentParser(
