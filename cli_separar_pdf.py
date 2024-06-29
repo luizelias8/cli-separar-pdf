@@ -3,7 +3,7 @@ from PyPDF2 import PdfReader, PdfWriter
 import os
 import sys
 
-__version__ = '3.1.0'
+__version__ = '3.2.0'
 
 def parsear_intervalos_paginas(intervalo_paginas):
     """
@@ -31,12 +31,11 @@ def parsear_intervalos_paginas(intervalo_paginas):
 
     return sorted(paginas)
 
-def extrair_paginas(pdf_entrada, intervalos_paginas, dir_saida):
+def extrair_paginas(pdf_entrada, intervalos_paginas, dir_saida, nome_arquivo_base):
     """
     Extrai as páginas de pagina_inicial até pagina_final (inclusive) do pdf_entrada e salva em pdf_saida.
     """
     leitor = PdfReader(pdf_entrada)
-    nome_arquivo, _ = os.path.splitext(os.path.basename(pdf_entrada))
 
     # Processar cada conjunto de intervalos de páginas separado por ';'
     intervalos_conjuntos = intervalos_paginas.split(';')
@@ -51,7 +50,7 @@ def extrair_paginas(pdf_entrada, intervalos_paginas, dir_saida):
                 print(f'Erro: Página {pagina} não existe no documento.')
                 sys.exit(1)
 
-        novo_nome = f'{nome_arquivo}_{contador}.pdf'
+        novo_nome = f'{nome_arquivo_base}_{contador}.pdf'
         caminho_saida = os.path.join(dir_saida, novo_nome)
 
         with open(caminho_saida, 'wb') as arquivo_saida:
@@ -67,6 +66,7 @@ def main():
     parser.add_argument('pdf_entrada', type=str, help='Caminho para o arquivo PDF de entrada')
     parser.add_argument('intervalos_paginas', type=str, help='Intervalos de páginas para extrair (ex: 1,3-5,7)')
     parser.add_argument('-d', '--dir_saida', type=str, default=None, help='Diretório para salvar o PDF de saída (opcional)')
+    parser.add_argument('-n', '--nome_base', type=str, default=None, help='Nome base para os arquivos PDF de saída (opcional)')
     parser.add_argument('-v', '--version', action='version', version=f'%(prog)s {__version__}')
 
     args = parser.parse_args()
@@ -85,7 +85,13 @@ def main():
     else:
         dir_saida = os.getcwd()
 
-    extrair_paginas(args.pdf_entrada, args.intervalos_paginas, dir_saida)
+    # Determinar o nome base do arquivo
+    if args.nome_base:
+        nome_arquivo_base = args.nome_base
+    else:
+        nome_arquivo_base, _ = os.path.splitext(os.path.basename(args.pdf_entrada))
+
+    extrair_paginas(args.pdf_entrada, args.intervalos_paginas, dir_saida, nome_arquivo_base)
 
 if __name__ == '__main__':
     main()

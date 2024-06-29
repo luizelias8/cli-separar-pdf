@@ -11,6 +11,7 @@ Script de linha de comando (CLI) que permite extrair um intervalo de páginas de
 - Extrai páginas específicas de um PDF.
 - Salva o PDF separado no diretório especificado ou no diretório atual com nome modificado.
 - Suporta a especificação de múltiplos intervalos de páginas para gerar vários arquivos.
+- Permite especificar um nome base para os arquivos de saída.
 
 ## Requisitos
 
@@ -36,7 +37,7 @@ pip install -r requirements.txt
 Para usar o script, execute seguido dos parâmetros necessários:
 
 ```
-python cli_separar_pdf.py <pdf_entrada> <intervalos_paginas> [-d <dir_saida>]
+python cli_separar_pdf.py <pdf_entrada> <intervalos_paginas> [-d <dir_saida>] [-n <nome_base>]
 ```
 
 ### Parâmetros
@@ -44,19 +45,20 @@ python cli_separar_pdf.py <pdf_entrada> <intervalos_paginas> [-d <dir_saida>]
 - `<pdf_entrada>`: Caminho para o arquivo PDF de entrada.
 - `<intervalos_paginas>`: Intervalos de páginas para extrair, no formato '1,3-5,7;8,15'.
 - `-d <dir_saida>`: (Opcional) Diretório para salvar o PDF de saída. Se não for especificado, o script salvará no diretório atual.
+- `-n <nome_base>`: (Opcional) Nome base para os arquivos PDF de saída. Se não for especificado, o script usará o nome do arquivo de entrada.
 
 ### Exemplo
 
-Para extrair as páginas 1, 3 a 5, e 7 do arquivo **documento.pdf** e salvar como **documento_1.pdf**, e extrair as páginas 8 e 15 para **documento_2.pdf** no diretório especificado:
+Para extrair as páginas 1, 3 a 5, e 7 do arquivo **documento.pdf** e salvar como **meu_pdf_1.pdf**, e extrair as páginas 8 e 15 para **meu_pdf_2.pdf** no diretório especificado:
 
 ```
-python cli_separar_pdf.py documento.pdf "1,3-5,7;8,15" -d /caminho/para/diretorio
+python cli_separar_pdf.py documento.pdf "1,3-5,7;8,15" -d /caminho/para/diretorio -n meu_pdf
 ```
 
 Ou, para salvar no diretório atual:
 
 ```
-python cli_separar_pdf.py documento.pdf "1,3-5,7;8,15"
+python cli_separar_pdf.py documento.pdf "1,3-5,7;8,15" -n meu_pdf
 ```
 
 ### Verificações
