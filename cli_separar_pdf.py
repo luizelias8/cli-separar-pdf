@@ -3,7 +3,7 @@ from PyPDF2 import PdfReader, PdfWriter
 import os
 import sys
 
-__version__ = '3.0.0'
+__version__ = '3.1.0'
 
 def parsear_intervalos_paginas(intervalo_paginas):
     """
@@ -36,25 +36,28 @@ def extrair_paginas(pdf_entrada, intervalos_paginas, dir_saida):
     Extrai as páginas de pagina_inicial até pagina_final (inclusive) do pdf_entrada e salva em pdf_saida.
     """
     leitor = PdfReader(pdf_entrada)
-    escritor = PdfWriter()
-
     nome_arquivo, _ = os.path.splitext(os.path.basename(pdf_entrada))
-    novo_nome = f'{nome_arquivo}_1.pdf'
-    caminho_saida = os.path.join(dir_saida, novo_nome)
 
-    paginas = parsear_intervalos_paginas(intervalos_paginas)
+    # Processar cada conjunto de intervalos de páginas separado por ';'
+    intervalos_conjuntos = intervalos_paginas.split(';')
+    for contador, intervalos in enumerate(intervalos_conjuntos, start=1):
+        escritor = PdfWriter()
+        paginas = parsear_intervalos_paginas(intervalos)
 
-    for pagina in paginas:
-        if pagina <= len(leitor.pages):
-            escritor.add_page(leitor.pages[pagina - 1]) # Ajustar para índice zero
-        else:
-            print(f'Erro: Página {pagina} não existe no documento.')
-            sys.exit(1)
+        for pagina in paginas:
+            if pagina <= len(leitor.pages):
+                escritor.add_page(leitor.pages[pagina - 1]) # Ajustar para índice zero
+            else:
+                print(f'Erro: Página {pagina} não existe no documento.')
+                sys.exit(1)
 
-    with open(caminho_saida, 'wb') as arquivo_saida:
-        escritor.write(arquivo_saida)
+        novo_nome = f'{nome_arquivo}_{contador}.pdf'
+        caminho_saida = os.path.join(dir_saida, novo_nome)
 
-    print(f'Páginas {intervalos_paginas} extraídas para {caminho_saida}')
+        with open(caminho_saida, 'wb') as arquivo_saida:
+            escritor.write(arquivo_saida)
+
+        print(f'Páginas {intervalos_paginas} extraídas para {caminho_saida}')
 
 def main():
     parser = argparse.ArgumentParser(
